@@ -10,7 +10,7 @@ Clone the repository:
 git clone https://github.com/irabeny89/go-chatty
 ```
 
-Add your `GEMINI_API_KEY` to a `.env` file or pass it along with the go run command.
+Add your [`GEMINI_API_KEY`](https://aistudio.google.com/app/api-keys) to a `.env` file or pass it along with the go run command.
 
 Run the code:
 
@@ -22,3 +22,9 @@ GEMINI_API_KEY=googleApiKeyValue go run main
 ```
 
 Then start chatting!
+
+---
+
+## Reference
+
+gemini api key: https://aistudio.google.com/app/api-keys
