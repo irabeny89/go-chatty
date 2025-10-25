@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"iter"
 	"log"
 	"os"
 
@@ -11,6 +12,16 @@ import (
 	"google.golang.org/genai"
 )
 
+func withStream(ctx context.Context, streamCha chan iter.Seq2[*genai.GenerateContentResponse, error], scanner *bufio.Scanner, client *genai.Client) {
+	input := scanner.Text()
+	stream := client.Models.GenerateContentStream(
+		ctx,
+		"gemini-2.5-flash",
+		genai.Text(input),
+		nil,
+	)
+	streamCha <- stream
+}
 func main() {
 	goenvy.LoadEnv()
 	APIKey := os.Getenv("GEMINI_API_KEY")
@@ -34,22 +45,18 @@ func main() {
 			log.Fatal(err)
 		}
 		cli.Scan()
-		input := cli.Text()
-		stream := client.Models.GenerateContentStream(
-			ctx,
-			"gemini-2.5-flash",
-			genai.Text(input),
-			nil,
-		)
-		fmt.Println("\n---Answer---")
-		for chunk, err := range stream {
+		streamCha := make(chan iter.Seq2[*genai.GenerateContentResponse, error])
+		go withStream(ctx, streamCha, cli, client)
+		fmt.Println("\n---Please wait for answer---")
+		for chunk, err := range <-streamCha {
 			if err != nil {
 				log.Fatal(err)
 			}
 			part := chunk.Candidates[0].Content.Parts[0]
 			fmt.Print(part.Text)
 		}
-		fmt.Println("---End---")
+		close(streamCha)
+		fmt.Println("\n---End---")
 		fmt.Println()
 	}
 }
