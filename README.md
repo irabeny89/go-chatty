@@ -21,7 +21,7 @@ go run main
 GEMINI_API_KEY=googleApiKeyValue go run main
 ```
 
-Then start chatting!
+Then start chatting! Use `CMD/CONTROL + c` to stop program.
 
 ---
 
