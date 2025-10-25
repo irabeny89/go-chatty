@@ -1,0 +1,32 @@
+name: CI/CD
+
+permissions:
+  contents: write
+  discussions: write
+
+on: ["push"]
+
+jobs:
+  version:
+    name: Git Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Release
+        uses: cocogitto/cocogitto-action@v3
+        id: release
+        with:
+          release: true
+
+      - name: Release Changelog
+        run: cog changelog --at ${{ steps.release.outputs.version }} -t full_hash > GITHUB_CHANGELOG.md
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: GITHUB_CHANGELOG.md
+          tag_name: v${{ steps.release.outputs.version }}
