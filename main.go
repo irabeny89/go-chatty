@@ -38,7 +38,8 @@ func main() {
 		log.Fatal(err)
 	}
 	for {
-		fmt.Println("Ask Questions")
+		fmt.Println("> Ask Questions <")
+		fmt.Print("> ")
 		cli := bufio.NewScanner(os.Stdin)
 		err = cli.Err()
 		if err != nil {
